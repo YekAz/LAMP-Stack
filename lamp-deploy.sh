@@ -49,18 +49,25 @@ sleep 2
 # Output status message
 echo "LAMP stack deployment complete."
 
-# Install git composer for laravel
-sudo apt install -y git composer
+# Install composer for laravel
+cd /usr/bin
+curl -sS https://getcomposer.org/installer | sudo php
+sudo mv composer.phar composer
 
-# Clone the laravel app repo inside the /var/www/html
-cd /var/www/html
-git clone git@github.com:laravel/laravel.git .
-composer install
+# Clone the laravel app repo inside the /var/www/ and get dependencies
+cd /var/www/
+sudo git clone git@github.com:laravel/laravel.git
+cd laravel
+composer install --optimize-autoloader --no-dev
 
 # Update ENV file and generate an encryption key
-cd /var/www/html
+# cd /var/www/html
 cp .env.example .env
 php artisan key:generate
+
+# set permissions
+chown -R www-data storage
+chown -R www-data bootstrap/cache
 
 # edit the .env file and define database
 #nano .env
