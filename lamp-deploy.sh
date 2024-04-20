@@ -27,6 +27,20 @@ sleep 2
 # Install MySQL
 echo "Installing MySQL database"
 sudo apt install -y mysql-server
+sudo mysql_secure_installation
+echo " "
+sleep 2
+
+# configure mysql
+echo "Configuring MySQL"
+sudo mysql -u root -p
+CREATE USER 'yekinni'@'localhost' IDENTIFIED BY 'vagrant';
+FLUSH PRIVILEGES;
+CREATE DATABASE laravel-app;
+SHOW DATABASES;
+GRANT ALL PRIVILEGES ON laravel-app.* to 'yekinni'@'localhost';
+sudo systemctl stop mysql
+sudo systemctl restart mysql
 echo " "
 sleep 2
 
@@ -42,7 +56,7 @@ sleep 2
 # Start the apache and mysql services
 echo 'Starting the apache and MySQL services'
 sudo systemctl restart apache2
-sudo systemctl restart mysql
+#sudo systemctl restart mysql
 echo " "
 sleep 2
 
@@ -56,18 +70,19 @@ sudo mv composer.phar composer
 
 # Clone the laravel app repo inside the /var/www/ and get dependencies
 cd /var/www/
-sudo git clone git@github.com:laravel/laravel.git
+#sudo git clone https://github.com/laravel/laravel.git
 cd laravel
-composer install --optimize-autoloader --no-dev
+sudo composer install --optimize-autoloader --no-dev
 
 # Update ENV file and generate an encryption key
 # cd /var/www/html
-cp .env.example .env
+sudo cp .env.example .env
 php artisan key:generate
+sudo nano .env
 
 # set permissions
-chown -R www-data storage
-chown -R www-data bootstrap/cache
+sudo chown -R www-data storage
+sudo chown -R www-data bootstrap/cache
 
 # edit the .env file and define database
 #nano .env
