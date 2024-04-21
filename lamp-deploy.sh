@@ -26,7 +26,7 @@ echo " "
 # Configuring MySQL
 echo "Configuring MySQL"
 sudo mysql -uroot -e "CREATE DATABASE laravelApp;"
-sudo mysql -uroot -e "CREATE USER 'azeez'@'localhost' IDENTIFIED BY 'ubuntu';"
+sudo mysql -uroot -e "CREATE USER 'azeez'@'localhost' IDENTIFIED BY 'vagrant';"
 sudo mysql -uroot -e "FLUSH PRIVILEGES"
 sudo mysql -uroot -e "SHOW DATABASES;"
 sudo mysql -uroot -e "GRANT ALL PRIVILEGES ON laravelApp.* TO 'azeez'@'localhost';"
@@ -37,9 +37,8 @@ sudo systemctl restart mysql
 
 # Install PHP
 echo "Installing PHP"
-sudo add-apt-repository ppa:ondrej/php
+sudo add-apt-repository ppa:ondrej/php --yes
 sudo apt update
-#sudo apt install -y php libapache2-mod-php php-mysql php-curl php-gd php-json php-mbstring php-xml php-zip
 sudo apt install -y php8.2-curl php8.2-dom php8.2-mbstring php8.2-xml php8.2-mysql zip unzip
 echo " "
 sleep 2
@@ -55,30 +54,66 @@ sudo mv composer.phar composer
 # Clone the laravel app repo inside the /var/www/ and get dependencies
 cd /var/www/
 sudo git clone https://github.com/laravel/laravel.git
+sudo chown -R $USER:$USER /var/www/laravel
+
+# Get dependencies
 cd laravel
 sudo composer install --optimize-autoloader --no-dev
 
 # Update ENV file and generate an encryption key
-# cd /var/www/html
 sudo cp .env.example .env
 sudo php artisan key:generate
 sudo php artisan migrate
+# sudo nano .env
 
-sudo nano .env
+# Define the variables you want to replace
+DB_DATABASE="laravelApp"
+DB_USERNAME="azeez"
+DB_PASSWORD="vagrant"
+
+# Uncomment lines if they are commented
+sudo sed -i '/^#DB_DATABASE=/s/^#//' .env
+sudo sed -i '/^#DB_USERNAME=/s/^#//' .env
+sudo sed -i '/^#DB_PASSWORD=/s/^#//' .env
+
+# Use sed to replace the values in the .env file
+sudo sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
+sudo sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
+sudo sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
 
 # set permissions
 sudo chown -R www-data storage
 sudo chown -R www-data bootstrap/cache
 
-# edit the .env file and define database
-#nano .env
-
 # configure apache for laravel
-sudo nano /etc/apache2/sites-available/azeezLaravelapp.conf
+cd /etc/apache2/sites-available/
+sudo touch Laravelapp.conf
+
+# Define the Apache configuration content
+CONFIG_CONTENT=$(cat <<EOL
+<VirtualHost *:80>
+    ServerName localhost
+    DocumentRoot /var/www/laravel/public
+
+    <Directory /var/www/laravel/public>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/laravel-error.log
+    CustomLog \${APACHE_LOG_DIR}/laravel-access.log combined
+</VirtualHost>
+EOL
+)
+
+# Write the configuration content to the Apache configuration file
+echo "$CONFIG_CONTENT" | sudo tee /etc/apache2/sites-available/Laravelapp.conf
 
 # activate apache rewrite module and enable website
 sudo a2enmod rewrite
-sudo a2ensite azeezLaravelapp.conf
+sudo a2dissite 000-default.conf
+sudo a2ensite Laravelapp.conf
 sudo apache2ctl -t
 sudo systemctl restart apache2
 
