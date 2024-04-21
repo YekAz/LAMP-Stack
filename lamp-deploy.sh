@@ -3,14 +3,6 @@
 echo "Initiating LAMP Stack installation and set-up"
 echo " "
 
-echo "------------------>"
-sleep 1
-echo "------------------>"
-sleep 1
-echo "------------------>"
-sleep 1
-echo " "
-
 # Update package index
 echo "Updating repository package index"
 sudo apt update
@@ -21,28 +13,27 @@ sleep 2
 # Install Apache
 echo "Installing Apache web server"
 sudo apt install -y apache2
+sudo systemctl restart apache2
 echo " "
 sleep 2
 
-# Install MySQL
+# Installing MySQL database
 echo "Installing MySQL database"
 sudo apt install -y mysql-server
-sudo mysql_secure_installation
+sleep 3
 echo " "
-sleep 2
 
-# configure mysql
+# Configuring MySQL
 echo "Configuring MySQL"
-sudo mysql -u root -p
-CREATE USER 'yekinni'@'localhost' IDENTIFIED BY 'vagrant';
-FLUSH PRIVILEGES;
-CREATE DATABASE laravel-app;
-SHOW DATABASES;
-GRANT ALL PRIVILEGES ON laravel-app.* to 'yekinni'@'localhost';
-sudo systemctl stop mysql
+sudo mysql -uroot -e "CREATE DATABASE laravelApp;"
+sudo mysql -uroot -e "CREATE USER 'azeez'@'localhost' IDENTIFIED BY 'ubuntu';"
+sudo mysql -uroot -e "FLUSH PRIVILEGES"
+sudo mysql -uroot -e "SHOW DATABASES;"
+sudo mysql -uroot -e "GRANT ALL PRIVILEGES ON laravelApp.* TO 'azeez'@'localhost';"
+
+# Restarting MySQL service
+echo "Restarting MySQL service"
 sudo systemctl restart mysql
-echo " "
-sleep 2
 
 # Install PHP
 echo "Installing PHP"
@@ -50,13 +41,6 @@ sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 #sudo apt install -y php libapache2-mod-php php-mysql php-curl php-gd php-json php-mbstring php-xml php-zip
 sudo apt install -y php8.2-curl php8.2-dom php8.2-mbstring php8.2-xml php8.2-mysql zip unzip
-echo " "
-sleep 2
-
-# Start the apache and mysql services
-echo 'Starting the apache and MySQL services'
-sudo systemctl restart apache2
-#sudo systemctl restart mysql
 echo " "
 sleep 2
 
@@ -70,14 +54,16 @@ sudo mv composer.phar composer
 
 # Clone the laravel app repo inside the /var/www/ and get dependencies
 cd /var/www/
-#sudo git clone https://github.com/laravel/laravel.git
+sudo git clone https://github.com/laravel/laravel.git
 cd laravel
 sudo composer install --optimize-autoloader --no-dev
 
 # Update ENV file and generate an encryption key
 # cd /var/www/html
 sudo cp .env.example .env
-php artisan key:generate
+sudo php artisan key:generate
+sudo php artisan migrate
+
 sudo nano .env
 
 # set permissions
