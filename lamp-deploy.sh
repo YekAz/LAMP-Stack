@@ -39,7 +39,7 @@ sudo systemctl restart mysql
 echo "Installing PHP"
 sudo add-apt-repository ppa:ondrej/php --yes
 sudo apt update
-sudo apt install -y php8.2-curl php8.2-dom php8.2-mbstring php8.2-xml php8.2-mysql zip unzip
+sudo apt install -y php8.2 php8.2-curl php8.2-dom php8.2-mbstring php8.2-xml php8.2-mysql zip unzip
 echo " "
 sleep 2
 
@@ -67,16 +67,22 @@ sudo php artisan migrate
 # sudo nano .env
 
 # Define the variables you want to replace
+DB_CONNECTION="mysql"
+DB_HOST="localhost"
 DB_DATABASE="laravelApp"
 DB_USERNAME="azeez"
 DB_PASSWORD="vagrant"
 
 # Uncomment lines if they are commented
+sudo sed -i '/^#DB_HOST=/s/^#//' .env
 sudo sed -i '/^#DB_DATABASE=/s/^#//' .env
 sudo sed -i '/^#DB_USERNAME=/s/^#//' .env
 sudo sed -i '/^#DB_PASSWORD=/s/^#//' .env
+sudo sed -i '/^#DB_PORT=/s/^#//' .env
 
 # Use sed to replace the values in the .env file
+sudo sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION=${DB_CONNECTION}/" .env
+sudo sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST}/" .env
 sudo sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
 sudo sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
 sudo sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
