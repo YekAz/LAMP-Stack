@@ -64,28 +64,45 @@ sudo composer install --optimize-autoloader --no-dev
 sudo cp .env.example .env
 sudo php artisan key:generate
 sudo php artisan migrate
-# sudo nano .env
 
-# Define the variables you want to replace
-DB_CONNECTION="mysql"
-DB_HOST="localhost"
-DB_DATABASE="laravelApp"
-DB_USERNAME="azeez"
-DB_PASSWORD="vagrant"
+# cd /var/www/laravel
+# # Define the variables you want to replace
+# DB_CONNECTION="mysql"
+# DB_HOST="localhost"
+# DB_DATABASE="laravelApp"
+# DB_USERNAME="azeez"
+# DB_PASSWORD="vagrant"
 
-# Uncomment lines if they are commented
-sudo sed -i '/^#DB_HOST=/s/^#//' .env
-sudo sed -i '/^#DB_DATABASE=/s/^#//' .env
-sudo sed -i '/^#DB_USERNAME=/s/^#//' .env
-sudo sed -i '/^#DB_PASSWORD=/s/^#//' .env
-sudo sed -i '/^#DB_PORT=/s/^#//' .env
+# # Uncomment lines if they are commented
+# sudo sed -i '/^#DB_HOST=/s/^#//' .env
+# sudo sed -i '/^#DB_DATABASE=/s/^#//' .env
+# sudo sed -i '/^#DB_USERNAME=/s/^#//' .env
+# sudo sed -i '/^#DB_PASSWORD=/s/^#//' .env
+# sudo sed -i '/^#DB_PORT=/s/^#//' .env
 
-# Use sed to replace the values in the .env file
-sudo sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION=${DB_CONNECTION}/" .env
-sudo sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST}/" .env
-sudo sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
-sudo sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
-sudo sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
+# # Use sed to replace the values in the .env file
+# sudo sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION=${DB_CONNECTION}/" .env
+# sudo sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST}/" .env
+# sudo sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
+# sudo sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
+# sudo sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
+
+# Uncomment the DB settings in the .env file
+cd /var/www/laravel
+
+sudo sed -i "23 s/^#//g" /var/www/laravel/.env
+sudo sed -i "24 s/^#//g" /var/www/laravel/.env
+sudo sed -i "25 s/^#//g" /var/www/laravel/.env
+sudo sed -i "26 s/^#//g" /var/www/laravel/.env
+sudo sed -i "27 s/^#//g" /var/www/laravel/.env
+
+# Enter the values for each DB term in the .env file
+sudo sed -i '22 s/=sqlite/=mysql/' /var/www/laravel/.env
+sudo sed -i '23 s/=127.0.0.1/=localhost/' /var/www/laravel/.env
+sudo sed -i '24 s/=3306/=3306/' /var/www/laravel/.env
+sudo sed -i '25 s/=laravel/=laravelApp/' /var/www/laravel/.env
+sudo sed -i '26 s/=root/=azeez/' /var/www/laravel/.env
+sudo sed -i '27 s/=/=vagrant/' /var/www/laravel/.env
 
 # set permissions
 sudo chown -R www-data storage
