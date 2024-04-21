@@ -59,7 +59,7 @@ sudo chown -R $USER:$USER /var/www/laravel
 
 # Get dependencies
 cd laravel
-sudo composer install --optimize-autoloader --no-dev 
+sudo composer install --optimize-autoloader --no-dev --no-interaction
 
 # Update ENV file and generate an encryption key
 sudo cp .env.example .env
@@ -73,14 +73,12 @@ sudo sed -i "24 s/^#//g" /var/www/laravel/.env
 sudo sed -i "25 s/^#//g" /var/www/laravel/.env
 sudo sed -i "26 s/^#//g" /var/www/laravel/.env
 sudo sed -i "27 s/^#//g" /var/www/laravel/.env
-
-# Enter the values for each DB term in the .env file
 sudo sed -i '22 s/=sqlite/=mysql/' /var/www/laravel/.env
 sudo sed -i '23 s/=127.0.0.1/=localhost/' /var/www/laravel/.env
 sudo sed -i '24 s/=3306/=3306/' /var/www/laravel/.env
 sudo sed -i '25 s/=laravel/=laravelApp/' /var/www/laravel/.env
 sudo sed -i '26 s/=root/=azeez/' /var/www/laravel/.env
-sudo sed -i '27 s/=/=vagrant/' /var/www/laravel/.envyes
+sudo sed -i '27 s/=/=vagrant/' /var/www/laravel/.env
 
 # migrate database
 sudo php artisan migrate
@@ -120,7 +118,4 @@ sudo a2dissite 000-default.conf
 sudo a2ensite Laravelapp.conf
 sudo apache2ctl -t
 sudo systemctl restart apache2
-
-
-
 
