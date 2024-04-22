@@ -1,25 +1,21 @@
 ---
 - name: Execute bash script and set up cron job
-  hosts: your_slave_node
+  hosts: all
   become: true
 
   tasks:
     - name: Transfer bash script to slave node
       copy:
-        src: /path/to/your/bash/script.sh
-        dest: /tmp/script.sh
+        src: /home/vagrant/LAMP-Stack/lamp-deploy.sh
+        dest: /home/vagrant/lamp-deploy.sh
+        owner: root
+        group: root
         mode: 0755
 
     - name: Execute the bash script
-      shell: /tmp/script.sh
-      args:
-        chdir: /tmp
-      register: script_output
+      shell: /home/vagrant/lamp-deploy.sh
 
-    - name: Display script output
-      debug:
-        var: script_output.stdout
-
+    
     - name: Set up cron job to check server uptime
       cron:
         name: check_server_uptime
