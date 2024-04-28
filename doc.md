@@ -12,7 +12,7 @@
 ![script](/LAMP-Stack/screen-shots/script-run-6.png)
 ![script](/LAMP-Stack/screen-shots/script-run-7.png)
 
-- The script is also here in this repo. You can also view it.
+- The script is also here in this repo. You can also view it....
 
  - Picture of the laravel app being accessed through the master machine ip address (http://192.168.33.45/)
 
